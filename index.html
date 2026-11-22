@@ -300,7 +300,7 @@
   .hero__word, .hero__word-copy {
     font-family: var(--sc-font-display); font-weight: 380;
     font-variation-settings: "opsz" 144, "SOFT" 60;
-    font-size: clamp(6.5rem, 27vw, 25rem); line-height: 0.8; letter-spacing: -0.045em;
+    font-size: clamp(6.5rem, 27vw, 34rem); line-height: 0.8; letter-spacing: -0.045em;
     padding-bottom: 0.2em; margin: 0 0 0 -0.04em;
   }
   .hero__word-copy {
@@ -442,7 +442,7 @@
     /* hero: the window becomes the top of the screen, the word crosses its lower edge */
     .hero__mast { width: auto; position: absolute; left: 0; right: 0; top: 0; color: #F4EEE6; }
     .hero__mast::after { background: color-mix(in oklab, #F4EEE6 40%, transparent); }
-    .hero { --F: clamp(6.5rem, 27vw, 25rem); --wb: 8.75rem; --pb: calc(var(--wb) + var(--F) * 0.42); }
+    .hero { --F: clamp(6.5rem, 27vw, 34rem); --wb: 8.75rem; --pb: calc(var(--wb) + var(--F) * 0.42); }
     .hero__word, .hero__word-copy { font-size: var(--F); }
     .hero__photo { left: 0; right: 0; top: 0; bottom: var(--pb); }
     .hero__photo::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 22%; z-index: 1; background: linear-gradient(to bottom, hsl(25 35% 6% / 0.5), transparent); }
