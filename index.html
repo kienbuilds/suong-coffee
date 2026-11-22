@@ -485,10 +485,31 @@
     .hero__body { bottom: 5.25rem; }
     .folio__ch { display: none; }
     .dial__label { display: none; }
-    .folio { left: 10px; bottom: 10px; } .dial { right: 10px; bottom: 10px; }
-    .dial button { padding: 0 9px; min-height: 36px; }
+    /* On a phone the two chips share one bottom row and never overlap: the
+       row owns the positioning, each chip just takes its natural width, and
+       the folio is the one that gives way if the screen is too narrow. */
+    .chrome {
+      position: fixed; z-index: var(--sc-z-chrome);
+      left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+      pointer-events: none;
+    }
+    .chrome > * { position: static; pointer-events: auto; }
+    .folio { flex: 0 1 auto; min-width: 0; padding: 6px 12px; gap: 10px; }
+    .folio__cta { white-space: nowrap; }
+    .dial { flex: 0 0 auto; padding: 4px; }
+    .dial button { padding: 0 10px; min-height: 36px; }
     .roast__head h2 { font-size: var(--sc-t-xl); }
     .roast__head p { display: none; }
+  }
+  @media (max-width: 390px) {
+    .dial button { padding: 0 9px; gap: 5px; }
+    .dial button i { width: 7px; height: 10px; }
+    .folio { padding: 6px 10px; }
+  }
+  @media (max-width: 345px) {
+    .folio__mark { display: none; }
+    .dial button i { display: none; }
   }
 </style>
 </head>
@@ -561,6 +582,7 @@
   </symbol>
 </svg>
 
+<div class="chrome">
 <nav class="folio" aria-label="Mục lục">
   <a class="folio__mark" href="#top">Sương</a>
   <span class="folio__ch" aria-live="polite"><b data-folio-num>·</b> <span data-folio-name>Trang đầu</span></span>
@@ -574,6 +596,7 @@
     <button type="button" role="radio" data-r="medium" aria-checked="true" tabindex="0"><i></i>Vừa</button>
     <button type="button" role="radio" data-r="dark" aria-checked="false" tabindex="-1"><i></i>Đậm</button>
   </div>
+</div>
 </div>
 
 <main id="top">
