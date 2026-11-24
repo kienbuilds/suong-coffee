@@ -360,6 +360,8 @@
   /* ---- menu photographs ---- */
   .drink__art { aspect-ratio: 4 / 5 !important; display: block !important; overflow: clip; background: var(--paper) !important; }
   .drink__art { position: relative; }
+  .drink__art--drawn { display: grid !important; place-items: center; background: color-mix(in oklab, var(--paper) 70%, #FFFFFF) !important; }
+  .drink__art--drawn svg { width: 52%; height: auto; overflow: visible; }
   .drink__art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 260ms var(--sc-ease-out), filter var(--regrade) var(--sc-ease-out); }
   @media (hover: hover) and (pointer: fine) { .drink:hover .drink__art img { transform: scale(1.035); } }
 
@@ -841,73 +843,202 @@
 <script src="scrollcraft.js"></script>
 <script>
 /* ------------------------------------------------------------------------
-   Fill the page from site-data.js BEFORE the engine mounts, so the menu rail
-   is measured with every drink already in it.
+   Shop data. Sources, in order:
+     1. site-data.js (always there: the fallback and the web-maker's settings)
+     2. the owner's Google Sheet, cached from the last visit (instant)
+     3. the owner's Google Sheet, fetched fresh after the page is up
+   The menu is rendered BEFORE the engine mounts so the rail is measured with
+   every drink in it; a later refresh re-renders and asks the engine to
+   lay out again.
    ------------------------------------------------------------------------ */
 (function () {
-  var S = window.SITE || {};
-  var R = S.reservation || {};
+  var S = window.SITE = window.SITE || {};
+  var SHEETS = S.sheets || {};
+  var CACHE_KEY = 'suong-sheet-v1';
+
   function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, S); }
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function digits(v) { return String(v || '').replace(/[^\d+]/g, ''); }
   function vnd(n) { return Number(n).toLocaleString('vi-VN') + ' đ'; }
+  function plain(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().trim(); }
 
-  // plain text slots
-  document.querySelectorAll('[data-site]').forEach(function (n) {
-    var v = get(n.getAttribute('data-site'));
-    if (v != null && v !== '') n.textContent = v;
-  });
-
-  // contact buttons: hide any whose value is empty
-  document.querySelectorAll('.contact [data-need]').forEach(function (li) { if (!get(li.getAttribute('data-need'))) li.hidden = true; });
-  var tel = document.querySelector('[data-href="tel"]'); if (tel && S.phone) tel.href = 'tel:' + digits(S.phone);
-  var zl = document.querySelector('[data-href="zalo"]'); if (zl && S.zalo) zl.href = 'https://zalo.me/' + digits(S.zalo).replace(/^\+84/, '0');
-  var mp = document.querySelector('[data-href="maps"]'); if (mp && S.mapsUrl) mp.href = S.mapsUrl;
-
-  var soc = document.querySelector('[data-socials]'), NAMES = { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' }, links = [];
-  for (var k in (S.socials || {})) if (S.socials[k]) links.push('<a href="' + esc(S.socials[k]) + '" target="_blank" rel="noopener">' + (NAMES[k] || esc(k)) + '</a>');
-  if (S.email) links.push('<a href="mailto:' + esc(S.email) + '">' + esc(S.email) + '</a>');
-  if (soc && links.length) { soc.innerHTML = links.join(''); soc.hidden = false; }
-
-  // menu rail
-  var note = document.querySelector('.rail__note');
-  (S.menu || []).forEach(function (d, i) {
-    var a = document.createElement('article');
-    a.className = 'drink'; a.style.setProperty('--i', i + 1);
-    var n = d.notes || {};
-    a.innerHTML =
-      '<div class="drink__art"><img class="photo" loading="lazy" decoding="async" src="' + esc(d.image) + '"' +
-        (d.width ? ' width="' + d.width + '" height="' + d.height + '"' : '') + ' alt="' + esc(d.alt || d.name) + '"></div>' +
-      '<h3>' + esc(d.name) + '</h3>' +
-      '<dl class="label">' +
-        (d.bean ? '<dt>Hạt</dt><dd>' + esc(d.bean) + '</dd>' : '') +
-        (d.brew ? '<dt>Pha</dt><dd>' + esc(d.brew) + '</dd>' : '') +
-        (n.medium ? '<dt>Vị</dt><dd class="notes" data-light="' + esc(n.light || n.medium) + '" data-medium="' + esc(n.medium) + '" data-dark="' + esc(n.dark || n.medium) + '">' + esc(n.medium) + '</dd>' : '') +
-        (d.price ? '<dt>Giá</dt><dd class="price">' + vnd(d.price) + '</dd>' : '') +
-      '</dl>';
-    note.parentNode.insertBefore(a, note);
-  });
-  if (!S.menuNote) note.remove();
-
-  // reservation selects + date limits (dates in Vietnam time)
-  var form = document.querySelector('.reserve');
-  var tSel = form.elements.namedItem('time'), gSel = form.elements.namedItem('guests'), dIn = form.elements.namedItem('date');
-  (R.times || ['8:00']).forEach(function (t) { var o = new Option(t, t, false, t === R.defaultTime); tSel.add(o); });
-  for (var g = 1; g <= (R.maxGuests || 4); g++) gSel.add(new Option(g, g, false, g === 2));
-  function vnDate(offset) {
-    var d = new Date(Date.now() + 7 * 3600e3 + offset * 864e5);
-    return d.toISOString().slice(0, 10);
+  /* ------------------------------------------------- Google Sheet → SITE -- */
+  function parseCSV(text) {
+    var rows = [], row = [], cell = '', q = false, i, c;
+    for (i = 0; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); rows.push(row); row = []; cell = '';
+      } else cell += c;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows.map(function (r) { return r.map(function (x) { return x.trim(); }); })
+               .filter(function (r) { return r.some(Boolean); });
   }
-  dIn.min = vnDate(0); dIn.max = vnDate(R.daysAhead || 14); dIn.value = vnDate(1);
+  function money(v) {
+    var s = plain(v), n = parseInt(s.replace(/\D/g, ''), 10);
+    if (!n) return 0;
+    return /k\b|nghin|ngan/.test(s) || n < 1000 ? n * 1000 : n;
+  }
+  // which column is which, read from the header row so the owner can reorder
+  function columnOf(h) {
+    h = plain(h);
+    if (/mo ta/.test(h)) return 'alt';
+    if (/^hien|con ban|ban hom nay/.test(h)) return 'show';
+    if (/ten/.test(h)) return 'name';
+    if (/gia/.test(h)) return 'price';
+    if (/sang/.test(h)) return 'light';
+    if (/vua/.test(h)) return 'medium';
+    if (/dam/.test(h)) return 'dark';
+    if (/hat/.test(h)) return 'bean';
+    if (/pha/.test(h)) return 'brew';
+    if (/anh|hinh/.test(h)) return 'image';
+    return null;
+  }
+  function menuFromRows(rows) {
+    var head = rows[0].map(columnOf), out = [];
+    rows.slice(1).forEach(function (r) {
+      var d = {};
+      head.forEach(function (k, i) { if (k) d[k] = r[i] || ''; });
+      if (!d.name) return;
+      if (d.show && /^(khong|an|het|no|0)/.test(plain(d.show))) return;
+      var img = d.image || '';
+      out.push({
+        name: d.name, price: money(d.price), bean: d.bean, brew: d.brew, alt: d.alt || d.name,
+        image: !img ? '' : /^https?:|\//.test(img) ? img : 'assets/' + img,
+        notes: { light: d.light, medium: d.medium || d.light || d.dark, dark: d.dark }
+      });
+    });
+    return out;
+  }
+  var DAYS = { 'thu hai': 1, 'thu 2': 1, 't2': 1, 'thu ba': 2, 'thu 3': 2, 't3': 2, 'thu tu': 3, 'thu 4': 3, 't4': 3,
+               'thu nam': 4, 'thu 5': 4, 't5': 4, 'thu sau': 5, 'thu 6': 5, 't6': 5, 'thu bay': 6, 'thu 7': 6, 't7': 6, 'chu nhat': 7, 'cn': 7 };
+  function hhmm(v) { var m = String(v).match(/(\d{1,2})\s*(?:[:hg.]\s*(\d{2})?)?/); return m ? ('0' + m[1]).slice(-2) + ':' + (m[2] || '00') : null; }
+  function infoFromRows(rows) {
+    var o = {}, open, close, off = [];
+    rows.forEach(function (r) {
+      var k = plain(r[0]), v = r[1] || '';
+      if (!k || k === 'muc') return;
+      if (/dien thoai/.test(k)) o.phone = v;
+      else if (/zalo/.test(k)) o.zalo = v.replace(/\D/g, '');
+      else if (/email|thu dien tu/.test(k)) o.email = v;
+      else if (/maps|ban do|chi duong/.test(k)) o.mapsUrl = v;
+      else if (/dia chi/.test(k)) o.address = { display: v };
+      else if (/facebook/.test(k)) (o.socials = o.socials || {}).facebook = v;
+      else if (/instagram/.test(k)) (o.socials = o.socials || {}).instagram = v;
+      else if (/tiktok/.test(k)) (o.socials = o.socials || {}).tiktok = v;
+      else if (/^mo cua tu|gio mo$/.test(k)) open = hhmm(v);
+      else if (/dong cua luc|gio dong/.test(k)) close = hhmm(v);
+      else if (/nghi/.test(k)) plain(v).split(/,|;| va /).forEach(function (d) { d = DAYS[d.replace(/\s+/g, ' ').trim()]; if (d) off.push(d); });
+      else if (/gio mo cua|hien tren trang/.test(k)) o.hoursText = v;
+      else if (/rang/.test(k)) o.roastDays = v;
+      else if (/ghi chu/.test(k)) o.menuNote = v;
+      else if (/khung gio|gio nhan|gio giu cho/.test(k)) o.times = v.split(/[,;]+/).map(function (t) { return t.trim(); }).filter(Boolean);
+      else if (/so nguoi/.test(k)) o.maxGuests = parseInt(v, 10) || undefined;
+    });
+    if (open && close) o.hours = [{ days: [1, 2, 3, 4, 5, 6, 7].filter(function (d) { return off.indexOf(d) < 0; }), open: open, close: close }];
+    return o;
+  }
+  function merge(sheet) {
+    var info = sheet.info || {};
+    ['phone', 'zalo', 'email', 'mapsUrl', 'hoursText', 'roastDays', 'menuNote', 'hours'].forEach(function (k) { if (info[k] != null && info[k] !== '') S[k] = info[k]; });
+    if (info.address) S.address = Object.assign({}, S.address, info.address);
+    if (info.socials) S.socials = Object.assign({}, S.socials, info.socials);
+    S.reservation = S.reservation || {};
+    if (info.times && info.times.length) S.reservation.times = info.times;
+    if (info.maxGuests) S.reservation.maxGuests = info.maxGuests;
+    if (sheet.menu && sheet.menu.length) S.menu = sheet.menu;
+  }
+  function fetchCSV(url) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 8000);
+    return fetch(url, { cache: 'no-store', signal: ctl && ctl.signal })
+      .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { if (/^\s*</.test(t)) throw new Error('not csv'); return parseCSV(t); });
+  }
+  function loadSheet() {
+    if (!SHEETS.menu && !SHEETS.info) return Promise.resolve(null);
+    return Promise.all([
+      SHEETS.menu ? fetchCSV(SHEETS.menu).then(menuFromRows).catch(function () { return null; }) : null,
+      SHEETS.info ? fetchCSV(SHEETS.info).then(infoFromRows).catch(function () { return null; }) : null
+    ]).then(function (res) {
+      if (!res[0] && !res[1]) return null;
+      return { menu: res[0], info: res[1] };
+    });
+  }
 
-  // demo vs live
+  /* -------------------------------------------------------------- render -- */
+  var form = document.querySelector('.reserve');
+  var rail = document.querySelector('.rail');
+  var note = document.querySelector('.rail__note');
+
+  function render() {
+    var R = S.reservation || {};
+    var roast = document.documentElement.getAttribute('data-roast') || 'medium';
+
+    document.querySelectorAll('[data-site]').forEach(function (n) {
+      var v = get(n.getAttribute('data-site'));
+      if (v != null && v !== '') n.textContent = v;
+    });
+
+    document.querySelectorAll('.contact [data-need]').forEach(function (li) { li.hidden = !get(li.getAttribute('data-need')); });
+    var tel = document.querySelector('[data-href="tel"]'); if (S.phone) tel.href = 'tel:' + digits(S.phone);
+    var zl = document.querySelector('[data-href="zalo"]'); if (S.zalo) zl.href = 'https://zalo.me/' + digits(S.zalo).replace(/^\+84/, '0');
+    var mp = document.querySelector('[data-href="maps"]'); if (S.mapsUrl) mp.href = S.mapsUrl;
+
+    var soc = document.querySelector('[data-socials]'), NAMES = { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' }, links = [];
+    for (var k in (S.socials || {})) if (S.socials[k]) links.push('<a href="' + esc(S.socials[k]) + '" target="_blank" rel="noopener">' + (NAMES[k] || esc(k)) + '</a>');
+    if (S.email) links.push('<a href="mailto:' + esc(S.email) + '">' + esc(S.email) + '</a>');
+    soc.innerHTML = links.join(''); soc.hidden = !links.length;
+
+    rail.querySelectorAll('.drink').forEach(function (n) { n.remove(); });
+    (S.menu || []).forEach(function (d, i) {
+      var a = document.createElement('article');
+      a.className = 'drink'; a.style.setProperty('--i', i + 1);
+      var n = d.notes || {}, mid = n.medium || n.light || n.dark;
+      a.innerHTML =
+        (d.image
+          ? '<div class="drink__art"><img class="photo" loading="lazy" decoding="async" src="' + esc(d.image) + '"' +
+            (d.width ? ' width="' + d.width + '" height="' + d.height + '"' : '') + ' alt="' + esc(d.alt || d.name) + '"></div>'
+          // no photo yet: one of the drawn cups, which also follow the roast colour
+          : '<div class="drink__art drink__art--drawn"><svg viewBox="0 0 200 ' + (i % 2 ? 220 : 170) + '" aria-hidden="true"><use href="#' + (i % 2 ? 'i-tall' : 'i-cup') + '"/></svg></div>') +
+        '<h3>' + esc(d.name) + '</h3>' +
+        '<dl class="label">' +
+          (d.bean ? '<dt>Hạt</dt><dd>' + esc(d.bean) + '</dd>' : '') +
+          (d.brew ? '<dt>Pha</dt><dd>' + esc(d.brew) + '</dd>' : '') +
+          (mid ? '<dt>Vị</dt><dd class="notes" data-light="' + esc(n.light || mid) + '" data-medium="' + esc(mid) + '" data-dark="' + esc(n.dark || mid) + '">' + esc(n[roast] || mid) + '</dd>' : '') +
+          (d.price ? '<dt>Giá</dt><dd class="price">' + vnd(d.price) + '</dd>' : '') +
+        '</dl>';
+      rail.insertBefore(a, note);
+    });
+    note.hidden = !S.menuNote;
+
+    var tSel = form.elements.namedItem('time'), gSel = form.elements.namedItem('guests');
+    var keepT = tSel.value, keepG = gSel.value;
+    tSel.length = 0; gSel.length = 0;
+    (R.times && R.times.length ? R.times : ['8:00']).forEach(function (t) { tSel.add(new Option(t, t, false, t === R.defaultTime)); });
+    for (var g = 1; g <= (R.maxGuests || 4); g++) gSel.add(new Option(g, g, false, g === 2));
+    if (keepT && [].some.call(tSel.options, function (o) { return o.value === keepT; })) tSel.value = keepT;
+    if (keepG && +keepG <= gSel.length) gSel.value = keepG;
+  }
+
+  // once-only parts: dates, demo note, copyright, Google structured data
+  function vnDate(offset) { return new Date(Date.now() + 7 * 3600e3 + offset * 864e5).toISOString().slice(0, 10); }
+  var dIn = form.elements.namedItem('date'), R0 = S.reservation || {};
+  dIn.min = vnDate(0); dIn.max = vnDate(R0.daysAhead || 14); dIn.value = vnDate(1);
   var demoNote = document.querySelector('[data-demo-note]');
   if (!S.demo && demoNote) demoNote.remove();
   var cr = document.querySelector('[data-copyright]');
   if (cr) cr.textContent = '© ' + new Date().getFullYear() + ' ' + (S.legalName || S.name || '');
 
-  // structured data for Google (only for the real shop, never for the demo)
-  if (!S.demo) {
+  function structuredData() {
+    if (S.demo) return;
     var DAY = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     var ld = {
       '@context': 'https://schema.org', '@type': 'CafeOrCoffeeShop',
@@ -919,12 +1050,31 @@
       sameAs: Object.keys(S.socials || {}).map(function (k) { return S.socials[k]; }).filter(Boolean),
       hasMenu: { '@type': 'Menu', hasMenuSection: { '@type': 'MenuSection', name: 'Cà phê', hasMenuItem: (S.menu || []).map(function (d) { return { '@type': 'MenuItem', name: d.name, offers: { '@type': 'Offer', price: d.price, priceCurrency: 'VND' } }; }) } }
     };
-    var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld);
-    document.head.appendChild(sc);
+    var sc = document.getElementById('ld-shop');
+    if (!sc) { sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.id = 'ld-shop'; document.head.appendChild(sc); }
+    sc.textContent = JSON.stringify(ld);
   }
+
+  // 1 + 2: fallback data, overlaid with last visit's sheet if we have it
+  var cached = null;
+  try { cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) {}
+  if (cached && cached.src === (SHEETS.menu || '') + '|' + (SHEETS.info || '')) merge(cached.data);
+  render(); structuredData();
+
+  // 3: fresh sheet, after the engine is up (window.__sc is set below)
+  loadSheet().then(function (data) {
+    if (!data) return;
+    var before = JSON.stringify(S);
+    merge(data);
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ src: (SHEETS.menu || '') + '|' + (SHEETS.info || ''), data: data })); } catch (e) {}
+    if (JSON.stringify(S) === before) return;
+    render(); structuredData();
+    if (window.__sc && window.__sc.layout) window.__sc.layout();
+    document.dispatchEvent(new CustomEvent('site:updated'));
+  });
 })();
 
-ScrollCraft.mount(document.body);
+window.__sc = ScrollCraft.mount(document.body);
 
 (function () {
   var root = document.documentElement;

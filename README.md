@@ -11,8 +11,9 @@ Mở `index.html` qua một máy chủ tĩnh bất kỳ, hoặc bật GitHub Pag
 
 ## Thành phần
 
-- `site-data.js`: thông tin quán, giờ mở cửa, liên hệ, thực đơn, giá, cấu hình form giữ chỗ.
-  Chủ quán chỉ cần sửa file này, xem `HUONG-DAN-CHU-QUAN.md`.
+- Chủ quán sửa thực đơn, giá, giờ, liên hệ trong **Google Sheets** (mẫu: `ban-giao/bang-tinh-mau-suong.xlsx`).
+  Xem `HUONG-DAN-CHU-QUAN.md`.
+- `site-data.js`: cài đặt (link bảng tính, Formspree, chế độ demo) và dữ liệu dự phòng.
 - `index.html`: bố cục, chữ giới thiệu các chương và hiệu ứng riêng của trang.
 - `chinh-sach-rieng-tu.html`, `404.html`, `page.css`: trang phụ.
 - `og-image.jpg`, `favicon.svg`, `apple-touch-icon.png`, `robots.txt`, `sitemap.xml`: chia sẻ link và SEO.

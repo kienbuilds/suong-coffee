@@ -1,14 +1,21 @@
 /* =====================================================================
-   THÔNG TIN QUÁN · chủ quán sửa file này, không cần đụng vào index.html
+   CÀI ĐẶT TRANG · dành cho người làm web, chủ quán KHÔNG cần mở file này
    ---------------------------------------------------------------------
-   Quy tắc khi sửa:
-   - Chỉ sửa phần nằm giữa hai dấu ngoặc kép "..." hoặc con số.
-   - Giữ nguyên dấu phẩy ở cuối mỗi dòng.
-   - Để trống "" nghĩa là ẩn mục đó trên trang (ví dụ chưa có TikTok).
-   - Sửa xong, lưu file rồi tải lại trang để xem.
-   Hướng dẫn chi tiết: HUONG-DAN-CHU-QUAN.md
+   Chủ quán sửa thực đơn, giá, giờ mở cửa, số điện thoại trong Google Sheets
+   (xem HUONG-DAN-CHU-QUAN.md). Bảng tính được ưu tiên hơn file này.
+
+   Dữ liệu bên dưới là BẢN DỰ PHÒNG: trang dùng nó khi chưa nối bảng tính,
+   hoặc khi Google tạm thời không trả lời.
    ===================================================================== */
 window.SITE = {
+
+  /* Link CSV của hai tab trong Google Sheets
+     (Tệp → Chia sẻ → Công bố lên web → chọn tab → Giá trị được phân tách bằng dấu phẩy (.csv) → Công bố).
+     Để trống thì trang chỉ dùng dữ liệu trong file này. */
+  sheets: {
+    menu: "",                     // tab "Thực đơn"
+    info: "",                     // tab "Thông tin quán"
+  },
 
   /* true  = trang mẫu (hiện dòng "thương hiệu giả định", form không gửi thật)
      false = trang chính thức của quán */
