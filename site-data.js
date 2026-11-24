@@ -22,7 +22,7 @@ window.SITE = {
   demo: true,
 
   /* Địa chỉ trang web, có dấu / ở cuối. Dùng cho Google và khi chia sẻ link. */
-  url: "https://kienbuilds.github.io/suong-coffee/",
+  url: "https://tachmade.github.io/suong-coffee/",
 
   name: "Sương",
   legalName: "Sương Coffee Roasters",   // tên trên giấy phép kinh doanh (hiện ở chính sách riêng tư)

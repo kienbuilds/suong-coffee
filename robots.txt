@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kienbuilds.github.io/suong-coffee/sitemap.xml
+Sitemap: https://tachmade.github.io/suong-coffee/sitemap.xml

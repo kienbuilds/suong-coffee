@@ -74,7 +74,7 @@ Chưa nối thì form vẫn chạy, chỉ hiện lời nhắn mời khách gọi
 
 1. Mua tên miền (Mắt Bão, PA Vietnam, Tenten...).
 2. GitHub: **Settings → Pages → Custom domain**, bật **Enforce HTTPS**; thêm bản ghi DNS theo hướng dẫn của GitHub.
-3. Thay `https://kienbuilds.github.io/suong-coffee/` bằng địa chỉ mới ở: `site-data.js` (`url`), `index.html` (`canonical`, `og:url`, `og:image`), `sitemap.xml`, `robots.txt`; trong `404.html` đổi `/suong-coffee/` thành `/`.
+3. Thay `https://tachmade.github.io/suong-coffee/` bằng địa chỉ mới ở: `site-data.js` (`url`), `index.html` (`canonical`, `og:url`, `og:image`), `sitemap.xml`, `robots.txt`; trong `404.html` đổi `/suong-coffee/` thành `/`.
 
 ### 6. Danh sách file
 
