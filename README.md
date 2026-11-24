@@ -11,10 +11,14 @@ Mở `index.html` qua một máy chủ tĩnh bất kỳ, hoặc bật GitHub Pag
 
 ## Thành phần
 
-- `index.html`: toàn bộ nội dung, bố cục và hiệu ứng riêng của trang.
+- `site-data.js`: thông tin quán, giờ mở cửa, liên hệ, thực đơn, giá, cấu hình form giữ chỗ.
+  Chủ quán chỉ cần sửa file này, xem `HUONG-DAN-CHU-QUAN.md`.
+- `index.html`: bố cục, chữ giới thiệu các chương và hiệu ứng riêng của trang.
+- `chinh-sach-rieng-tu.html`, `404.html`, `page.css`: trang phụ.
+- `og-image.jpg`, `favicon.svg`, `apple-touch-icon.png`, `robots.txt`, `sitemap.xml`: chia sẻ link và SEO.
 - `scrollcraft.js`, `scrollcraft.css`: engine cuộn của scroll-craft, giấy phép MIT
   (xem `LICENSE-scrollcraft.txt`).
 - `assets/`: ảnh từ Unsplash, nguồn từng ảnh trong `CREDITS.md`.
 - `BRIEF.md`: bản brief thiết kế.
 
-Thương hiệu, địa chỉ và giá trong trang đều là giả định.
+Thương hiệu, địa chỉ, số điện thoại và giá trong trang đều là giả định (`demo: true` trong `site-data.js`).

@@ -4,8 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sương · Cà phê rang mỗi sáng</title>
-<meta name="description" content="Sương rang hạt arabica Cầu Đất mỗi sáng và pha tại Hà Nội. Website mẫu cho một thương hiệu giả định.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231B1E1A'/><ellipse cx='16' cy='16' rx='7' ry='10' fill='%23A33A26' transform='rotate(-18 16 16)'/></svg>">
+<meta name="description" content="Sương rang hạt arabica Cầu Đất mỗi sáng và pha tại Hà Nội. Phin, bạc xỉu, rót tay, cà phê muối, ủ lạnh. Giữ chỗ cạnh cửa sổ trước một ngày.">
+<meta name="theme-color" content="#1B1E1A">
+<link rel="canonical" href="https://kienbuilds.github.io/suong-coffee/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- ảnh và chữ hiện khi chia sẻ link qua Facebook, Zalo, Messenger -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:site_name" content="Sương">
+<meta property="og:title" content="Sương · Cà phê rang mỗi sáng">
+<meta property="og:description" content="Hạt arabica Cầu Đất, rang mỗi sáng và pha tại Hà Nội. Giữ một chỗ cạnh cửa sổ, lúc sương chưa tan.">
+<meta property="og:url" content="https://kienbuilds.github.io/suong-coffee/">
+<meta property="og:image" content="https://kienbuilds.github.io/suong-coffee/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Chữ Sương vắt qua ảnh tách cà phê cạnh cửa sổ buổi sáng">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="assets/hero-window-cup.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&display=swap&subset=vietnamese" rel="stylesheet">
@@ -65,6 +81,10 @@
   .chapter-mark b { font-family: var(--sc-font-display); font-weight: 500; font-style: italic; font-size: var(--sc-t-lg); color: var(--sc-accent); }
   .caption { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); margin-top: var(--sc-3); max-width: 52ch; }
   .caption i { font-style: normal; color: var(--sc-ink); }
+
+  .skip { position: absolute; left: -9999px; top: 12px; z-index: 1000; padding: 10px 16px; border-radius: 999px; background: var(--dark); color: var(--ink-d); font-weight: 600; font-size: var(--sc-t-sm); }
+  .skip:focus { left: 12px; }
+  .noscript { margin: 0; padding: 12px var(--sc-gutter); background: var(--cherry); color: #FFF8F2; font-size: var(--sc-t-sm); }
 
   /* ------------------------------------------------------------------ hero -- */
   .hero { position: relative; min-height: 100vh; min-height: 100svh; overflow: clip; }
@@ -339,7 +359,8 @@
 
   /* ---- menu photographs ---- */
   .drink__art { aspect-ratio: 4 / 5 !important; display: block !important; overflow: clip; background: var(--paper) !important; }
-  .drink__art img { width: 100%; height: 100%; object-fit: cover; transition: transform 260ms var(--sc-ease-out), filter var(--regrade) var(--sc-ease-out); }
+  .drink__art { position: relative; }
+  .drink__art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 260ms var(--sc-ease-out), filter var(--regrade) var(--sc-ease-out); }
   @media (hover: hover) and (pointer: fine) { .drink:hover .drink__art img { transform: scale(1.035); } }
 
   /* ---- colophon: photograph bleeds the left half, the plate holds the right ---- */
@@ -357,11 +378,40 @@
   .steam path { stroke: var(--sc-ink-soft); stroke-width: 2; fill: none; stroke-linecap: round; opacity: 0.6; stroke-dasharray: 6 10; }
   @media (prefers-reduced-motion: no-preference) { .steam path { animation: steam 2.8s linear infinite; } .steam path:nth-child(2) { animation-duration: 3.4s; } }
   @keyframes steam { to { stroke-dashoffset: -64; } }
-  .reserve { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: var(--sc-3); align-items: end; margin-top: var(--sc-5); }
+  .open-now { display: inline-block; margin-left: 6px; font-size: var(--sc-t-xs); font-weight: 600; color: var(--sc-ink-soft); }
+  .open-now::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: currentColor; }
+  .open-now.is-open { color: #8FC79A; }
+  .contact { list-style: none; padding: 0; margin: 0 0 var(--sc-5); display: flex; flex-wrap: wrap; gap: var(--sc-2); }
+  .contact[hidden], .contact li[hidden] { display: none; }
+  .colophon .contact a {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 12px; border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--sc-ink) 28%, transparent); color: var(--sc-ink); font-weight: 500; text-decoration: none;
+    transition: background-color 160ms var(--sc-ease-out), border-color 160ms var(--sc-ease-out), transform 120ms var(--sc-ease-out);
+  }
+  .contact a b { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .contact svg { width: 18px; height: 18px; fill: none; stroke: var(--sc-accent); stroke-width: 1.7; stroke-linejoin: round; stroke-linecap: round; }
+  .contact a:active { transform: scale(0.97); }
+  @media (hover: hover) and (pointer: fine) { .colophon .contact a:hover { background: color-mix(in oklab, var(--sc-ink) 8%, transparent); border-color: color-mix(in oklab, var(--sc-ink) 40%, transparent); } }
+  .socials { margin: calc(var(--sc-2) * -1) 0 var(--sc-5); display: flex; flex-wrap: wrap; gap: var(--sc-2) var(--sc-5); }
+  .socials[hidden] { display: none; }
+  .colophon .socials a { color: var(--sc-ink-soft); font-weight: 500; text-decoration: underline; text-underline-offset: 0.22em; }
+  .reserve { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--sc-3); align-items: end; margin-top: var(--sc-5); }
+  .reserve .r-name, .reserve .r-phone { grid-column: span 3; }
+  .reserve .r-date, .reserve .r-time, .reserve .r-n { grid-column: span 2; }
+  .reserve .consent { grid-column: 1 / span 4; display: flex; gap: 10px; align-items: flex-start; font-size: var(--sc-t-xs); line-height: 1.5; letter-spacing: 0; color: var(--sc-ink-soft); font-weight: 400; }
+  .reserve .consent input { width: 18px; height: 18px; min-height: 0; margin: 1px 0 0; padding: 0; flex: 0 0 auto; accent-color: var(--sc-accent); }
+  .reserve .consent a { font-weight: 500; }
+  .reserve button { grid-column: 5 / -1; }
+  .reserve .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .reserve input[type="date"] { color-scheme: dark; }
+  .reserve [aria-invalid="true"] { border-color: var(--sc-accent); }
+  .reserve button[disabled] { opacity: 0.6; cursor: progress; }
+  .reserve__out a { color: var(--sc-accent); font-weight: 600; }
+  .fine a { color: inherit !important; font-weight: 500 !important; }
   .reserve label { display: grid; gap: 4px; color: var(--sc-ink-soft); font-size: var(--sc-t-xs); font-weight: 500; letter-spacing: 0.04em; }
   .reserve input, .reserve select {
     min-height: 44px; padding: 8px 10px; border-radius: 6px;
-    border: 1px solid var(--sc-hairline-strong); background: color-mix(in oklab, var(--dark) 80%, #FFFFFF); color: var(--sc-ink);
+    border: 1px solid color-mix(in oklab, var(--sc-ink) 22%, transparent); background: color-mix(in oklab, var(--dark) 80%, #FFFFFF); color: var(--sc-ink);
     font-size: var(--sc-t-sm); width: 100%;
   }
   .reserve button {
@@ -475,8 +525,8 @@
     .seat__cup { right: -40%; width: 56%; }
     .colophon__cup { margin-bottom: var(--sc-7); }
     .reserve { grid-template-columns: 1fr 1fr; }
-    .reserve label:first-child { grid-column: 1 / -1; }
-    .reserve button { grid-column: 1 / -1; }
+    .reserve .r-name, .reserve .r-phone, .reserve .r-date, .reserve .consent, .reserve button { grid-column: 1 / -1; }
+    .reserve .r-time, .reserve .r-n { grid-column: span 1; }
     .recipes li { grid-template-columns: 1fr; gap: var(--sc-2); }
   }
   @media (max-width: 700px) {
@@ -515,6 +565,8 @@
 </head>
 <body>
 
+<a class="skip" href="#giu-cho">Bỏ qua, tới phần giữ chỗ</a>
+<noscript><p class="noscript">Trang cần bật JavaScript để hiển thị đầy đủ thực đơn và form giữ chỗ.</p></noscript>
 <span data-sc-progress></span>
 <div class="sc-grain" aria-hidden="true"></div>
 
@@ -606,7 +658,7 @@
     <div class="hero__mast"><span>Rang &amp; pha tại Hà Nội</span><span>Hạt Cầu Đất, Đà Lạt</span></div>
     <div class="hero__plane hero__mist" data-sc-parallax="1.4" aria-hidden="true"><span></span><span></span></div>
     <div class="hero__photo">
-      <div class="hero__photo-img" data-sc-parallax="1.4"><img class="photo" src="assets/hero-window-cup.webp" width="1600" height="2844" alt="Tách cà phê nóng trên bàn gỗ cạnh cửa sổ buổi sáng"></div>
+      <div class="hero__photo-img" data-sc-parallax="1.4"><img class="photo" fetchpriority="high" src="assets/hero-window-cup.webp" width="1600" height="2844" alt="Tách cà phê nóng trên bàn gỗ cạnh cửa sổ buổi sáng"></div>
       <div class="hero__photo-scrim" aria-hidden="true"></div>
       <span class="hero__word-copy" aria-hidden="true">Sương</span>
     </div>
@@ -629,8 +681,8 @@
         </div>
         <figure class="spread__media origin__media">
           <div class="duo">
-            <div class="duo__main"><img class="photo" src="assets/origin-cherries.webp" width="1600" height="1067" alt="Chùm quả cà phê chín đỏ và tím giữa lá xanh"></div>
-            <div class="duo__inset" data-sc-parallax="-1.1"><img class="photo" src="assets/origin-branch.webp" width="900" height="1350" alt="Một cành cà phê với quả chín đỏ và vàng trên nền tối"></div>
+            <div class="duo__main"><img class="photo" loading="lazy" decoding="async" src="assets/origin-cherries.webp" width="1600" height="1067" alt="Chùm quả cà phê chín đỏ và tím giữa lá xanh"></div>
+            <div class="duo__inset" data-sc-parallax="-1.1"><img class="photo" loading="lazy" decoding="async" src="assets/origin-branch.webp" width="900" height="1350" alt="Một cành cà phê với quả chín đỏ và vàng trên nền tối"></div>
           </div>
           <figcaption class="caption"><i>Chỉ hái quả chín đỏ.</i> Phần còn xanh được để lại trên cành thêm vài ngày.</figcaption>
         </figure>
@@ -641,7 +693,7 @@
   <!-- AUTHORED SILENCE: the intertitle before the peak -->
   <section id="ch2-intertitle" class="intertitle dark" data-sc-act="flow" data-folio-num="II" data-folio-name="Rang" data-ground="dark">
     <div class="intertitle__bg" aria-hidden="true">
-      <div class="intertitle__img" data-sc-parallax="1.8"><img class="photo" src="assets/roast-scoop.webp" width="2400" height="1600" alt=""></div>
+      <div class="intertitle__img" data-sc-parallax="1.8"><img class="photo" loading="lazy" decoding="async" src="assets/roast-scoop.webp" width="2400" height="1600" alt=""></div>
       <div class="sc-scrim sc-scrim--lead"></div>
     </div>
     <div class="sc-wrap" data-sc-in data-sc-stagger="90">
@@ -695,7 +747,7 @@
       <div class="spread">
         <figure class="spread__media" style="margin:0">
           <div class="brew__frame" data-sc-reveal="up" data-sc-reveal-at="0.06 0.4">
-            <div class="brew__img" data-sc-parallax="-1"><img class="photo" src="assets/brew-pourover.webp" width="1200" height="1800" alt="Phễu rót tay đặt trên bình thủy tinh, hơi nóng bốc lên trong quán"></div>
+            <div class="brew__img" data-sc-parallax="-1"><img class="photo" loading="lazy" decoding="async" src="assets/brew-pourover.webp" width="1200" height="1800" alt="Phễu rót tay đặt trên bình thủy tinh, hơi nóng bốc lên trong quán"></div>
           </div>
           <div class="drawing" hidden>
             <svg viewBox="0 0 400 500" aria-hidden="true">
@@ -741,91 +793,137 @@
           <h2 class="sc-display">Hôm nay uống gì?</h2>
           <p class="sc-body">Mỗi ly ghi rõ hạt, cách pha, và vị theo độ rang bạn đang chọn.</p>
         </div>
-        <article class="drink" style="--i:1">
-          <div class="drink__art"><img class="photo" loading="lazy" src="assets/menu-phin.webp" width="900" height="1350" alt="Phin nhôm đặt trên ly, cà phê nhỏ giọt"></div>
-          <h3>Phin đen</h3>
-          <dl class="label">
-            <dt>Hạt</dt><dd>Cầu Đất, sơ chế ướt</dd>
-            <dt>Pha</dt><dd>Phin nhôm, 5 phút</dd>
-            <dt>Vị</dt><dd class="notes" data-light="Chanh vàng, trà đen, chua sáng" data-medium="Sô cô la sữa, hạt phỉ, đường thốt nốt" data-dark="Sô cô la đắng, mật mía, khói nhẹ">Sô cô la sữa, hạt phỉ, đường thốt nốt</dd>
-            <dt>Giá</dt><dd class="price">45.000 đ</dd>
-          </dl>
-        </article>
-        <article class="drink" style="--i:2">
-          <div class="drink__art"><img class="photo" loading="lazy" src="assets/menu-bacxiu.webp" width="900" height="1350" alt="Ly bạc xỉu nhiều lớp sữa và cà phê"></div>
-          <h3>Bạc xỉu</h3>
-          <dl class="label">
-            <dt>Hạt</dt><dd>Cầu Đất, sơ chế ướt</dd>
-            <dt>Pha</dt><dd>Phin, sữa đặc, sữa tươi</dd>
-            <dt>Vị</dt><dd class="notes" data-light="Sữa chua, đào, ngọt nhẹ" data-medium="Caramel, sữa, bánh quy" data-dark="Kẹo dừa cháy, ca cao">Caramel, sữa, bánh quy</dd>
-            <dt>Giá</dt><dd class="price">55.000 đ</dd>
-          </dl>
-        </article>
-        <article class="drink" style="--i:3">
-          <div class="drink__art"><img class="photo" loading="lazy" src="assets/menu-rottay.webp" width="900" height="621" alt="Cốc cà phê nóng trong nắng sớm"></div>
-          <h3>Rót tay</h3>
-          <dl class="label">
-            <dt>Hạt</dt><dd>Lô rang trong tuần</dd>
-            <dt>Pha</dt><dd>Phễu nón, 3 phút</dd>
-            <dt>Vị</dt><dd class="notes" data-light="Hoa nhài, cam, mật ong" data-medium="Táo đỏ, caramel, hạnh nhân" data-dark="Sô cô la, gỗ tuyết tùng">Táo đỏ, caramel, hạnh nhân</dd>
-            <dt>Giá</dt><dd class="price">70.000 đ</dd>
-          </dl>
-        </article>
-        <article class="drink" style="--i:4">
-          <div class="drink__art"><img class="photo" loading="lazy" src="assets/menu-muoi.webp" width="900" height="1318" alt="Ly cà phê phủ lớp kem muối dày"></div>
-          <h3>Cà phê muối</h3>
-          <dl class="label">
-            <dt>Hạt</dt><dd>Cầu Đất, sơ chế ướt</dd>
-            <dt>Pha</dt><dd>Phin, kem muối</dd>
-            <dt>Vị</dt><dd class="notes" data-light="Chanh muối, kem, tươi" data-medium="Caramel muối, bơ" data-dark="Sô cô la đen, kem mặn">Caramel muối, bơ</dd>
-            <dt>Giá</dt><dd class="price">55.000 đ</dd>
-          </dl>
-        </article>
-        <article class="drink" style="--i:5">
-          <div class="drink__art"><img class="photo" loading="lazy" src="assets/menu-ulanh.webp" width="900" height="1350" alt="Ly cà phê ủ lạnh với đá"></div>
-          <h3>Ủ lạnh</h3>
-          <dl class="label">
-            <dt>Hạt</dt><dd>Cầu Đất, xay thô</dd>
-            <dt>Pha</dt><dd>Ngâm 16 giờ, rót đá</dd>
-            <dt>Vị</dt><dd class="notes" data-light="Trà ô long, mận" data-medium="Ca cao, anh đào" data-dark="Mạch nha rang, ca cao đắng">Ca cao, anh đào</dd>
-            <dt>Giá</dt><dd class="price">60.000 đ</dd>
-          </dl>
-        </article>
-        <p class="rail__note">Hạt rang bán theo túi 250 g ở quầy. Hỏi chúng tôi mẻ nào vừa ra lò.</p>
+        <!-- các món được dựng từ site-data.js (mục menu) -->
+        <p class="rail__note" data-site="menuNote"></p>
       </div>
     </div>
   </section>
 
   <!-- COLOPHON: the close. Small type, a full cup in your roast, one line to reserve. -->
   <section id="giu-cho" class="colophon dark" data-sc-act="flow" data-folio-num="V" data-folio-name="Ghé quán" data-ground="dark">
-    <div class="colophon__photo"><img class="photo" src="assets/visit-window.webp" width="1600" height="2133" alt="Không gian quán buổi chiều, cửa sổ lớn mở ra hàng cây ngoài phố"></div>
+    <div class="colophon__photo"><img class="photo" loading="lazy" decoding="async" src="assets/visit-window.webp" width="1600" height="2133" alt="Không gian quán buổi chiều, cửa sổ lớn mở ra hàng cây ngoài phố"></div>
     <div class="colophon__body">
         <div class="colophon__text sc-stack" data-sc-in data-sc-stagger="60">
           <p class="chapter-mark"><b>V</b> Ghé quán</p>
           <h2 class="sc-display">Một chỗ cạnh cửa sổ, lúc sương chưa tan.</h2>
           <dl>
-            <dt>Mở cửa</dt><dd>7:00 đến 18:00, mỗi ngày</dd>
-            <dt>Ở đâu</dt><dd>Phố cổ, Hà Nội (địa chỉ minh họa)</dd>
-            <dt>Rang</dt><dd>Mỗi sáng thứ Ba và thứ Sáu</dd>
+            <dt>Mở cửa</dt><dd><span data-site="hoursText">7:00 đến 18:00, mỗi ngày</span> <span class="open-now" data-open-now hidden></span></dd>
+            <dt>Ở đâu</dt><dd><span data-site="address.display">Hà Nội</span></dd>
+            <dt>Rang</dt><dd data-site="roastDays">Mỗi sáng thứ Ba và thứ Sáu</dd>
             <dt>Ly của bạn</dt><dd><i data-light="Rang sáng" data-medium="Rang vừa" data-dark="Rang đậm">Rang vừa</i>, pha <span data-light="94°C" data-medium="92°C" data-dark="88°C">92°C</span></dd>
           </dl>
+          <ul class="contact" aria-label="Liên hệ">
+            <li data-need="phone"><a data-href="tel" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.7l1.4 4.2-2 1.3a12 12 0 0 0 6.3 6.3l1.3-2 4.2 1.4v2.7a2 2 0 0 1-2.1 2A16.6 16.6 0 0 1 4.6 5.6a2 2 0 0 1 2-2.1Z"/></svg><span>Gọi <b data-site="phone"></b></span></a></li>
+            <li data-need="zalo"><a data-href="zalo" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5Z"/><path d="M8.5 7.5h4l-4 5h4M15.5 7.5v5"/></svg><span>Nhắn Zalo</span></a></li>
+            <li data-need="mapsUrl"><a data-href="maps" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg><span>Chỉ đường</span></a></li>
+          </ul>
+          <p class="socials" data-socials hidden></p>
           <p>Bàn cạnh cửa sổ thường kín trước tám giờ. Muốn chắc có chỗ, hãy <a href="#reserve-name">giữ chỗ</a> trước một ngày.</p>
           <form class="reserve" novalidate>
-            <label>Tên<input id="reserve-name" name="name" autocomplete="off" placeholder="Tên của bạn"></label>
-            <label>Giờ<select name="time"><option>7:00</option><option selected>8:00</option><option>9:00</option><option>10:00</option><option>14:00</option><option>16:00</option></select></label>
-            <label>Số người<select name="n"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+            <label class="r-name">Tên<input id="reserve-name" name="name" autocomplete="name" placeholder="Tên của bạn" required maxlength="60"></label>
+            <label class="r-phone">Số điện thoại<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx" required maxlength="16"></label>
+            <label class="r-date">Ngày<input name="date" type="date" required></label>
+            <label class="r-time">Giờ<select name="time"></select></label>
+            <label class="r-n">Số người<select name="guests"></select></label>
+            <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <label class="consent"><input type="checkbox" name="consent" value="đồng ý" required><span>Tôi đồng ý để quán dùng tên và số điện thoại này chỉ để giữ chỗ và liên hệ lại. <a href="chinh-sach-rieng-tu.html">Chính sách riêng tư</a></span></label>
             <button type="submit">Giữ chỗ</button>
             <p class="reserve__out" role="status" aria-live="polite"></p>
           </form>
-          <p class="fine">Website mẫu cho một thương hiệu giả định. Ảnh minh họa từ Unsplash (giấy phép Unsplash), cành cà phê và hạt rang vẽ bằng mã. Biểu mẫu không gửi dữ liệu đi đâu.</p>
+          <p class="fine"><span data-demo-note>Website mẫu cho một thương hiệu giả định. Ảnh minh họa từ Unsplash (giấy phép Unsplash), cành cà phê và hạt rang vẽ bằng mã.</span> <span data-copyright></span> · <a href="chinh-sach-rieng-tu.html">Chính sách riêng tư</a></p>
         </div>
     </div>
   </section>
 
 </main>
 
+<script src="site-data.js"></script>
 <script src="scrollcraft.js"></script>
 <script>
+/* ------------------------------------------------------------------------
+   Fill the page from site-data.js BEFORE the engine mounts, so the menu rail
+   is measured with every drink already in it.
+   ------------------------------------------------------------------------ */
+(function () {
+  var S = window.SITE || {};
+  var R = S.reservation || {};
+  function get(path) { return path.split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, S); }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function digits(v) { return String(v || '').replace(/[^\d+]/g, ''); }
+  function vnd(n) { return Number(n).toLocaleString('vi-VN') + ' đ'; }
+
+  // plain text slots
+  document.querySelectorAll('[data-site]').forEach(function (n) {
+    var v = get(n.getAttribute('data-site'));
+    if (v != null && v !== '') n.textContent = v;
+  });
+
+  // contact buttons: hide any whose value is empty
+  document.querySelectorAll('.contact [data-need]').forEach(function (li) { if (!get(li.getAttribute('data-need'))) li.hidden = true; });
+  var tel = document.querySelector('[data-href="tel"]'); if (tel && S.phone) tel.href = 'tel:' + digits(S.phone);
+  var zl = document.querySelector('[data-href="zalo"]'); if (zl && S.zalo) zl.href = 'https://zalo.me/' + digits(S.zalo).replace(/^\+84/, '0');
+  var mp = document.querySelector('[data-href="maps"]'); if (mp && S.mapsUrl) mp.href = S.mapsUrl;
+
+  var soc = document.querySelector('[data-socials]'), NAMES = { facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok' }, links = [];
+  for (var k in (S.socials || {})) if (S.socials[k]) links.push('<a href="' + esc(S.socials[k]) + '" target="_blank" rel="noopener">' + (NAMES[k] || esc(k)) + '</a>');
+  if (S.email) links.push('<a href="mailto:' + esc(S.email) + '">' + esc(S.email) + '</a>');
+  if (soc && links.length) { soc.innerHTML = links.join(''); soc.hidden = false; }
+
+  // menu rail
+  var note = document.querySelector('.rail__note');
+  (S.menu || []).forEach(function (d, i) {
+    var a = document.createElement('article');
+    a.className = 'drink'; a.style.setProperty('--i', i + 1);
+    var n = d.notes || {};
+    a.innerHTML =
+      '<div class="drink__art"><img class="photo" loading="lazy" decoding="async" src="' + esc(d.image) + '"' +
+        (d.width ? ' width="' + d.width + '" height="' + d.height + '"' : '') + ' alt="' + esc(d.alt || d.name) + '"></div>' +
+      '<h3>' + esc(d.name) + '</h3>' +
+      '<dl class="label">' +
+        (d.bean ? '<dt>Hạt</dt><dd>' + esc(d.bean) + '</dd>' : '') +
+        (d.brew ? '<dt>Pha</dt><dd>' + esc(d.brew) + '</dd>' : '') +
+        (n.medium ? '<dt>Vị</dt><dd class="notes" data-light="' + esc(n.light || n.medium) + '" data-medium="' + esc(n.medium) + '" data-dark="' + esc(n.dark || n.medium) + '">' + esc(n.medium) + '</dd>' : '') +
+        (d.price ? '<dt>Giá</dt><dd class="price">' + vnd(d.price) + '</dd>' : '') +
+      '</dl>';
+    note.parentNode.insertBefore(a, note);
+  });
+  if (!S.menuNote) note.remove();
+
+  // reservation selects + date limits (dates in Vietnam time)
+  var form = document.querySelector('.reserve');
+  var tSel = form.elements.namedItem('time'), gSel = form.elements.namedItem('guests'), dIn = form.elements.namedItem('date');
+  (R.times || ['8:00']).forEach(function (t) { var o = new Option(t, t, false, t === R.defaultTime); tSel.add(o); });
+  for (var g = 1; g <= (R.maxGuests || 4); g++) gSel.add(new Option(g, g, false, g === 2));
+  function vnDate(offset) {
+    var d = new Date(Date.now() + 7 * 3600e3 + offset * 864e5);
+    return d.toISOString().slice(0, 10);
+  }
+  dIn.min = vnDate(0); dIn.max = vnDate(R.daysAhead || 14); dIn.value = vnDate(1);
+
+  // demo vs live
+  var demoNote = document.querySelector('[data-demo-note]');
+  if (!S.demo && demoNote) demoNote.remove();
+  var cr = document.querySelector('[data-copyright]');
+  if (cr) cr.textContent = '© ' + new Date().getFullYear() + ' ' + (S.legalName || S.name || '');
+
+  // structured data for Google (only for the real shop, never for the demo)
+  if (!S.demo) {
+    var DAY = ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var ld = {
+      '@context': 'https://schema.org', '@type': 'CafeOrCoffeeShop',
+      name: S.name, url: S.url, telephone: S.phone, servesCuisine: 'Cà phê', priceRange: '₫',
+      image: S.url + 'og-image.jpg',
+      address: { '@type': 'PostalAddress', streetAddress: get('address.street') || undefined, addressLocality: get('address.district') || undefined, addressRegion: get('address.city') || undefined, addressCountry: 'VN' },
+      hasMap: S.mapsUrl || undefined,
+      openingHoursSpecification: (S.hours || []).map(function (h) { return { '@type': 'OpeningHoursSpecification', dayOfWeek: h.days.map(function (x) { return DAY[x]; }), opens: h.open, closes: h.close }; }),
+      sameAs: Object.keys(S.socials || {}).map(function (k) { return S.socials[k]; }).filter(Boolean),
+      hasMenu: { '@type': 'Menu', hasMenuSection: { '@type': 'MenuSection', name: 'Cà phê', hasMenuItem: (S.menu || []).map(function (d) { return { '@type': 'MenuItem', name: d.name, offers: { '@type': 'Offer', price: d.price, priceCurrency: 'VND' } }; }) } }
+    };
+    var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld);
+    document.head.appendChild(sc);
+  }
+})();
+
 ScrollCraft.mount(document.body);
 
 (function () {
@@ -1063,14 +1161,63 @@ ScrollCraft.mount(document.body);
   requestAnimationFrame(frame);
 
   /* ------------------------------------------------------------ reserve -- */
-  var form = document.querySelector('.reserve'), out = form.querySelector('.reserve__out');
+  var S = window.SITE || {}, R = S.reservation || {};
+  var form = document.querySelector('.reserve'), out = form.querySelector('.reserve__out'), btn = form.querySelector('button');
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function contactLine() {
+    var bits = [];
+    if (S.phone) bits.push('gọi <a href="tel:' + S.phone.replace(/[^\d+]/g, '') + '">' + esc(S.phone) + '</a>');
+    if (S.zalo) bits.push('<a href="https://zalo.me/' + S.zalo.replace(/[^\d]/g, '') + '" target="_blank" rel="noopener">nhắn Zalo</a>');
+    return bits.length ? ' Cần gấp, hãy ' + bits.join(' hoặc ') + '.' : '';
+  }
+  function niceDate(iso) { var p = iso.split('-'); return p[2] + '/' + p[1]; }
+  function fail(el, msg) { el.setAttribute('aria-invalid', 'true'); out.textContent = msg; el.focus(); }
+  form.addEventListener('input', function (e) { e.target.removeAttribute('aria-invalid'); });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    var f = form.elements, nameEl = f.namedItem('name');
-    var name = nameEl.value.trim();
-    if (!name) { out.textContent = 'Cho chúng tôi biết tên bạn nhé.'; nameEl.focus(); return; }
-    out.textContent = 'Cảm ơn ' + name + '. Bàn ' + f.namedItem('n').value + ' người lúc ' + f.namedItem('time').value + ' đã được ghi nhận. (Bản mẫu: chưa gửi đi đâu.)';
+    var f = form.elements;
+    var nameEl = f.namedItem('name'), phoneEl = f.namedItem('phone'), dateEl = f.namedItem('date'), consentEl = f.namedItem('consent');
+    var name = nameEl.value.trim(), phone = phoneEl.value.replace(/[\s.\-]/g, '');
+    if (!name) return fail(nameEl, 'Cho chúng tôi biết tên bạn nhé.');
+    if (!/^(0|\+84)\d{9,10}$/.test(phone)) return fail(phoneEl, 'Số điện thoại chưa đúng. Ví dụ: 0912 345 678.');
+    if (!dateEl.value || dateEl.value < dateEl.min || dateEl.value > dateEl.max) return fail(dateEl, 'Chọn một ngày trong ' + (R.daysAhead || 14) + ' ngày tới nhé.');
+    if (!consentEl.checked) return fail(consentEl, 'Bạn cần đồng ý để quán dùng số điện thoại cho việc giữ chỗ.');
+    if (f.namedItem('_gotcha').value) return; // spam bot
+
+    var summary = 'bàn ' + f.namedItem('guests').value + ' người, ' + f.namedItem('time').value + ' ngày ' + niceDate(dateEl.value);
+    if (!R.formEndpoint) {
+      out.innerHTML = 'Cảm ơn ' + esc(name) + ', ' + esc(summary) + '.' +
+        (S.demo ? ' (Trang mẫu: yêu cầu chưa được gửi đi.)' : ' Form đặt chỗ chưa được kết nối.') + contactLine();
+      return;
+    }
+    btn.disabled = true; out.textContent = 'Đang gửi...';
+    var data = new FormData(form);
+    data.set('phone', phone);
+    data.append('_subject', 'Giữ chỗ: ' + name + ', ' + summary);
+    fetch(R.formEndpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r; })
+      .then(function () {
+        out.innerHTML = 'Đã nhận yêu cầu của ' + esc(name) + ': ' + esc(summary) + '. Quán sẽ gọi hoặc nhắn lại để xác nhận.';
+        form.reset(); dateEl.value = dateEl.min;
+        f.namedItem('time').value = R.defaultTime || f.namedItem('time').options[0].value;
+      })
+      .catch(function () { out.innerHTML = 'Chưa gửi được, có thể do mạng.' + (contactLine() || ' Thử lại sau ít phút nhé.'); })
+      .then(function () { btn.disabled = false; });
   });
+
+  /* ------------------------------------------------------- open right now -- */
+  var openEl = document.querySelector('[data-open-now]');
+  function mins(hhmm) { var p = hhmm.split(':'); return +p[0] * 60 + +p[1]; }
+  function updateOpen() {
+    if (!openEl || !S.hours || !S.hours.length) return;
+    var now = new Date(Date.now() + 7 * 3600e3); // Vietnam time, no DST
+    var day = now.getUTCDay() || 7, m = now.getUTCHours() * 60 + now.getUTCMinutes();
+    var slot = S.hours.filter(function (h) { return h.days.indexOf(day) > -1 && m >= mins(h.open) && m < mins(h.close); })[0];
+    openEl.hidden = false;
+    openEl.classList.toggle('is-open', !!slot);
+    openEl.textContent = slot ? 'Đang mở, tới ' + slot.close.replace(/^0/, '') : 'Đang đóng cửa';
+  }
+  updateOpen(); setInterval(updateOpen, 60000);
 })();
 </script>
 </body>
