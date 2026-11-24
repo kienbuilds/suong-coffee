@@ -13,8 +13,8 @@ window.SITE = {
      (Tệp → Chia sẻ → Công bố lên web → chọn tab → Giá trị được phân tách bằng dấu phẩy (.csv) → Công bố).
      Để trống thì trang chỉ dùng dữ liệu trong file này. */
   sheets: {
-    menu: "",                     // tab "Thực đơn"
-    info: "",                     // tab "Thông tin quán"
+    menu: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTFhw30XnP24eAR3BTDKumkhQVxjVfmB_L_yh_54d93Wc0M9IYZARdTSXQNUJj7DDWracEf0ygq58/pub?gid=1577294200&single=true&output=csv",                     // tab "Thực đơn"
+    info: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQeTFhw30XnP24eAR3BTDKumkhQVxjVfmB_L_yh_54d93Wc0M9IYZARdTSXQNUJj7DDWracEf0ygq58/pub?gid=604389094&single=true&output=csv",                     // tab "Thông tin quán"
   },
 
   /* true  = trang mẫu (hiện dòng "thương hiệu giả định", form không gửi thật)
